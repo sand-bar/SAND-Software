@@ -1,0 +1,43 @@
+# Project: Project1
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = main.o BATTypeDef.o BAT64128AVX2_32Way.o BAT64128AVX2_64Way.o BAT128128AVX2_16Way.o BAT128128AVX2_32Way.o
+LINKOBJ  = main.o BATTypeDef.o BAT64128AVX2_32Way.o BAT64128AVX2_64Way.o BAT128128AVX2_16Way.o BAT128128AVX2_32Way.o
+LIBS     = -L"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"D:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
+INCS     = -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+BIN      = Project1.exe
+CXXFLAGS = $(CXXINCS) 
+CFLAGS   = $(INCS) -O2 -m64  -mavx2 -mbmi2
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+BATTypeDef.o: BATTypeDef.c
+	$(CC) -c BATTypeDef.c -o BATTypeDef.o $(CFLAGS)
+
+BAT64128AVX2_32Way.o: BAT64128AVX2_32Way.c
+	$(CC) -c BAT64128AVX2_32Way.c -o BAT64128AVX2_32Way.o $(CFLAGS)
+
+BAT64128AVX2_64Way.o: BAT64128AVX2_64Way.c
+	$(CC) -c BAT64128AVX2_64Way.c -o BAT64128AVX2_64Way.o $(CFLAGS)
+
+BAT128128AVX2_16Way.o: BAT128128AVX2_16Way.c
+	$(CC) -c BAT128128AVX2_16Way.c -o BAT128128AVX2_16Way.o $(CFLAGS)
+
+BAT128128AVX2_32Way.o: BAT128128AVX2_32Way.c
+	$(CC) -c BAT128128AVX2_32Way.c -o BAT128128AVX2_32Way.o $(CFLAGS)
