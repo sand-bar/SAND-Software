@@ -1,10 +1,10 @@
-# BAT-Software
+# SAND-Software
 
-Software implementations of BAT block ciphers
+Software implementations of SAND block ciphers
 
-## The bitsliced implementations of BAT and SIMON
+## The bitsliced implementations of SAND and SIMON
 
-We provide our bitsliced implementations of BAT and SIMON (may still can be improved), and do the benchmarks on both Linux and Windows platforms. The speeds are tested for 2MB messages and the detail results are listed below.
+We provide our bitsliced implementations of SAND and SIMON (may still can be improved), and do the benchmarks on both Linux and Windows platforms. The speeds are tested for 2MB messages and the detail results are listed below.
 
 ### The benchmarks on Windows:
 
@@ -12,10 +12,10 @@ We provide our bitsliced implementations of BAT and SIMON (may still can be impr
 
 | Cipher      | Parallel Way | Speed (cpb) | Cipher        | Parallel Way | Speed (cpb) |
 |:-----------:|:-------------:|:-----------:|:-------------:|:-------------:|:-----------:|
-| BAT-64/128  | 32            | 2.30        | SIMON-64/128  | 32            | 1.98        |
-| BAT-64/128  | 64            | 1.93        | SIMON-64/128  | 64            | 1.79        |
-| BAT-128/128 | 16            | 2.46        | SIMON-128/128 | 16            | 2.81        |
-| BAT-128/128 | 32            | 2.34        | SIMON-128/128 | 32            | 2.49        |
+| SAND-64/128  | 32            | 2.30        | SIMON-64/128  | 32            | 1.98        |
+| SAND-64/128  | 64            | 1.93        | SIMON-64/128  | 64            | 1.79        |
+| SAND-128/128 | 16            | 2.46        | SIMON-128/128 | 16            | 2.81        |
+| SAND-128/128 | 32            | 2.34        | SIMON-128/128 | 32            | 2.49        |
 
 For the implementations in SIMON-SPECK-SUPERCOP [1], we use the codes and get the results below.
 
@@ -30,10 +30,10 @@ For the implementations in SIMON-SPECK-SUPERCOP [1], we use the codes and get th
 
 | Cipher      | Parallel Way | Speed (cpb) | Cipher        | Parallel Way | Speed (cpb) |
 |:-----------:|:-------------:|:-----------:|:-------------:|:-------------:|:-----------:|
-| BAT-64/128  | 32            | 2.31        | SIMON-64/128  | 32            | 1.94        |
-| BAT-64/128  | 64            | 1.97        | SIMON-64/128  | 64            | 1.68        |
-| BAT-128/128 | 16            | 2.52        | SIMON-128/128 | 16            | 2.61        |
-| BAT-128/128 | 32            | 2.29        | SIMON-128/128 | 32            | 2.41        |
+| SAND-64/128  | 32            | 2.31        | SIMON-64/128  | 32            | 1.94        |
+| SAND-64/128  | 64            | 1.97        | SIMON-64/128  | 64            | 1.68        |
+| SAND-128/128 | 16            | 2.52        | SIMON-128/128 | 16            | 2.61        |
+| SAND-128/128 | 32            | 2.29        | SIMON-128/128 | 32            | 2.41        |
 
 
 For the implementations in SIMON-SPECK-SUPERCOP [1], we test the codes and get the results below.

@@ -1,4 +1,4 @@
-#include "BATTypeDef.h"
+#include "SANDTypeDef.h"
 
  
 static void swapmove(__m256i * a, __m256i * b, int n, __m256i m) 

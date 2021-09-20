@@ -1,7 +1,7 @@
-#include "BATTypeDef.h" 
+#include "SANDTypeDef.h" 
 
 /*
-BAT 64-128 avx2  32 way
+SAND 64-128 avx2  32 way
 
 */
 
@@ -19,7 +19,7 @@ static  const unsigned char _C_ALIGN32(Lbswap_mask4[32]) = {
  4,4,5,5,6,6,7,7,0,0,1,1,2,2,3,3,  4,4,5,5,6,6,7,7,0,0,1,1,2,2,3,3,
 };
 
-#define BATBsRK_64AVX2(rk,m,x0)\
+#define SANDBsRK_64AVX2(rk,m,x0)\
 	A= _mm256_set1_epi32(x0);\
     A= _mm256_shuffle_epi8( A, MSK4) ;\
 	*(rk+m) = _mm256_cmpeq_epi8( _mm256_and_si256(MSK0, A) , MSK0); \
@@ -28,7 +28,7 @@ static  const unsigned char _C_ALIGN32(Lbswap_mask4[32]) = {
 	*(rk+m+3) = _mm256_cmpeq_epi8( _mm256_and_si256(MSK3, A) , MSK3); 
 
 
-void BATGenRK_64_128BSAVX2(__m256i * rk, const u8i *MK)
+void SANDGenRK_64_128BSAVX2(__m256i * rk, const u8i *MK)
 {
 	u32i x0;
 	u32i x1;
@@ -47,32 +47,32 @@ void BATGenRK_64_128BSAVX2(__m256i * rk, const u8i *MK)
 	x2 = (*((u32i*)(MK + 8)));
 	x1 = (*((u32i*)(MK + 4)));
 	x0 = (*((u32i*)(MK)));
-	for (i = 0; i < RoundBAT64128 - 4; i += 4)
+	for (i = 0; i < RoundSAND64128 - 4; i += 4)
 	{
 
 
-		BATBsRK_64AVX2(rk, i * 4, (x0));	x0 ^= (i + 1);
-		BATFunA_64B(x3, k, m);  x0 ^= k;
+		SANDBsRK_64AVX2(rk, i * 4, (x0));	x0 ^= (i + 1);
+		SANDFunA_64B(x3, k, m);  x0 ^= k;
 
-		BATBsRK_64AVX2(rk, i * 4 + 4, (x1)); x1 ^= (i + 2);
-		BATFunA_64B(x0, k, m);  x1 ^= k;
+		SANDBsRK_64AVX2(rk, i * 4 + 4, (x1)); x1 ^= (i + 2);
+		SANDFunA_64B(x0, k, m);  x1 ^= k;
 
-		BATBsRK_64AVX2(rk, i * 4 + 8, (x2));  x2 ^= (i + 3);
-		BATFunA_64B(x1, k, m);  x2 ^= k;
+		SANDBsRK_64AVX2(rk, i * 4 + 8, (x2));  x2 ^= (i + 3);
+		SANDFunA_64B(x1, k, m);  x2 ^= k;
 
-		BATBsRK_64AVX2(rk, i * 4 + 12, (x3));  x3 ^= (i + 4);
-		BATFunA_64B(x2, k, m); x3 ^= k;
+		SANDBsRK_64AVX2(rk, i * 4 + 12, (x3));  x3 ^= (i + 4);
+		SANDFunA_64B(x2, k, m); x3 ^= k;
 	}
-	BATBsRK_64AVX2(rk, i * 4, (x0));
+	SANDBsRK_64AVX2(rk, i * 4, (x0));
 	i++;
-	BATBsRK_64AVX2(rk, i * 4, (x1));
+	SANDBsRK_64AVX2(rk, i * 4, (x1));
 	i++;
-	BATBsRK_64AVX2(rk, i * 4, (x2));
+	SANDBsRK_64AVX2(rk, i * 4, (x2));
 	i++;
-	BATBsRK_64AVX2(rk, i * 4, (x3));
+	SANDBsRK_64AVX2(rk, i * 4, (x3));
 }
 
-#define BAT64128InputData256(D0,D1,D2,D3,D4,D5,D6,D7,pt)\
+#define SAND64128InputData256(D0,D1,D2,D3,D4,D5,D6,D7,pt)\
 	D0 = _mm256_loadu_si256((__m256i*)(pt));\
 	D1 = _mm256_loadu_si256((__m256i*)(pt+32));\
 	D2 = _mm256_loadu_si256((__m256i*)(pt+32*2));\
@@ -101,7 +101,7 @@ void BATGenRK_64_128BSAVX2(__m256i * rk, const u8i *MK)
 	D3=  _mm256_unpackhi_epi64(E3, E7); 
 
 
-#define BAT64128OutputData256(D0,D1,D2,D3,D4,D5,D6,D7,out) \
+#define SAND64128OutputData256(D0,D1,D2,D3,D4,D5,D6,D7,out) \
 	D0 = _mm256_shuffle_epi8( D0, MSKF);\
 	D1 = _mm256_shuffle_epi8( D1, MSKF);\
 	D2 = _mm256_shuffle_epi8( D2, MSKF);\
@@ -131,7 +131,7 @@ void BATGenRK_64_128BSAVX2(__m256i * rk, const u8i *MK)
 	_mm256_storeu_si256((__m256i*)(out+32*7), E7); 	
 
  
-#define  BATGfun32W(b0,b1,b2,b3,a0,  a1, a2, a3,p,a00,a03,a12,a11) \
+#define  SANDGfun32W(b0,b1,b2,b3,a0,  a1, a2, a3,p,a00,a03,a12,a11) \
 a00= _mm256_and_si256(a2,a3);\
 a00= _mm256_xor_si256(a0,a00);\
 a03= _mm256_and_si256(a1,a00);\
@@ -153,49 +153,49 @@ b1= _mm256_xor_si256(  _mm256_shuffle_epi8( a11, MSKx), b1 );\
 b2= _mm256_xor_si256(  _mm256_shuffle_epi8( a12, MSKx), b2);\
 b3= _mm256_xor_si256( _mm256_shuffle_epi8( a03, MSKz) , b3 );
 
-#define TwoRoundsBAT(D0,D1,D2,D3,D4,D5,D6,D7)\
-	BATGfun32W(D4,D5,D6,D7,D0,D1,D2,D3,p,E0,E1,E2,E3);  \
-	BATGfun32W(D0,D1,D2,D3,D4,D5,D6,D7,p+4,E0,E1,E2,E3);
+#define TwoRoundsSAND(D0,D1,D2,D3,D4,D5,D6,D7)\
+	SANDGfun32W(D4,D5,D6,D7,D0,D1,D2,D3,p,E0,E1,E2,E3);  \
+	SANDGfun32W(D0,D1,D2,D3,D4,D5,D6,D7,p+4,E0,E1,E2,E3);
 
-void BATEnc_64_128BSAVX2(u8i *out, u8i *pt, __m256i * rk)
+void SANDEnc_64_128BSAVX2(u8i *out, u8i *pt, __m256i * rk)
 {
 	__m256i *p = (__m256i *)rk;
-	__m256i *rkend = p + RoundBAT64128 * 4;
+	__m256i *rkend = p + RoundSAND64128 * 4;
 	const __m256i MSKz = _mm256_load_si256((__m256i*) Lbswap_maskD);
 	const __m256i MSKx = _mm256_load_si256((__m256i*) Lbswap_maskE);
 	const __m256i MSKF = _mm256_load_si256((__m256i*) Lbswap_maskF);
 	__m256i D0, D1, D2, D3, D4, D5, D6, D7;
 	__m256i E0, E1, E2, E3, E4, E5, E6, E7;
 
-	BAT64128InputData256(D0, D1, D2, D3, D4, D5, D6, D7, pt);
+	SAND64128InputData256(D0, D1, D2, D3, D4, D5, D6, D7, pt);
 
 	while (p < rkend)
 	{
-		TwoRoundsBAT(D0, D1, D2, D3, D4, D5, D6, D7);
+		TwoRoundsSAND(D0, D1, D2, D3, D4, D5, D6, D7);
 
 		p += 8;
 	}
 
-	BAT64128OutputData256(D0, D1, D2, D3, D4, D5, D6, D7, out);
+	SAND64128OutputData256(D0, D1, D2, D3, D4, D5, D6, D7, out);
 }
 
 
-int crypto_stream_BAT64128ecb_avx2_32Way(
+int crypto_stream_SAND64128ecb_avx2_32Way(
 	unsigned char *out,
 	unsigned char *in,
 	unsigned long long inlen,
 	const unsigned char *k
 )
 {
-	__m256i rk[RoundBAT64128 * 4];
+	__m256i rk[RoundSAND64128 * 4];
 
 
 	if (!inlen) return 0;
 
-	BATGenRK_64_128BSAVX2(rk, k);
+	SANDGenRK_64_128BSAVX2(rk, k);
 
 	while (inlen >= 256) {
-		BATEnc_64_128BSAVX2(out, in, rk);
+		SANDEnc_64_128BSAVX2(out, in, rk);
 		inlen -= 256;
 		in += 256;
 		out += 256;
@@ -205,7 +205,7 @@ int crypto_stream_BAT64128ecb_avx2_32Way(
 }
 
 
-void TestBAT64128BSAVX2_32Way()
+void TestSAND64128BSAVX2_32Way()
 {
 	int i, j;
 	unsigned char MK[16] = { 0 };
@@ -230,7 +230,7 @@ void TestBAT64128BSAVX2_32Way()
 		else if ((i + 1) % 8 == 0) printf(" ");
 	}
 	printf("----------------------------------------\n");
-	crypto_stream_BAT64128ecb_avx2_32Way(out, pt, 512, MK);
+	crypto_stream_SAND64128ecb_avx2_32Way(out, pt, 512, MK);
 	for (i = 0; i < 512; i++)
 	{
 		printf("%02x", out[i]);
@@ -247,14 +247,14 @@ void TestBAT64128BSAVX2_32Way()
 		for (j = 0; j < inlen; j++)
 			pt[j] = rand() % 256;
 		grdtscl(&cyclea);
-		crypto_stream_BAT64128ecb_avx2_32Way(out, pt, inlen, MK);
+		crypto_stream_SAND64128ecb_avx2_32Way(out, pt, inlen, MK);
 		grdtscl(&cycleb);
 		cp += (cycleb - cyclea);
 	}
 	cp = cp / inlen;
 	cpb = cp / (cloop);
 	cpc = (cp - cpb * cloop) * 100 / cloop;
-	printf("BAT 64-128 32-way Enc cpb: %ld.%02ld\n", cpb, cpc);
+	printf("SAND 64-128 32-way Enc cpb: %ld.%02ld\n", cpb, cpc);
 	_mm_free(pt);
 	_mm_free(out);
 }

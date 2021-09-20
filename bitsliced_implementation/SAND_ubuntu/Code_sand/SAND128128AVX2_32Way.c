@@ -1,6 +1,6 @@
-#include "BATTypeDef.h" 
+#include "SANDTypeDef.h" 
 /*
-BAT  128-128 avx2  32 way
+SAND  128-128 avx2  32 way
 
 */
 static const unsigned char _C_ALIGN32(Lbswap_maskA[32]) = {
@@ -11,7 +11,7 @@ static const unsigned char _C_ALIGN32(Lbswap_maskB[32]) = {
 4,1,6,3,0,5, 2,7, 12,9,14,11,8,13, 10, 15,4,1,6,3,0,5, 2,7, 12,9,14,11,8,13, 10, 15,
 };
 
-#define BAT128128InputData256A(D0,D1,D2,D3,D4,D5,D6,D7,pt)\
+#define SAND128128InputData256A(D0,D1,D2,D3,D4,D5,D6,D7,pt)\
 D0 = _mm256_loadu_si256((__m256i*)(pt));\
 D1 = _mm256_loadu_si256((__m256i*)(pt+32));\
 D2 = _mm256_loadu_si256((__m256i*)(pt+32*2));\
@@ -30,7 +30,7 @@ D6 = _mm256_permute4x64_epi64( D6, 0xb1);\
 D7 = _mm256_permute4x64_epi64( D7, 0xb1);\
 bitsliceAVX2(&D0,&D1,&D2,&D3,&D4,&D5,&D6,&D7);
 
-#define BAT128128OutputData256A(E0,E1,E2,E3,E4,E5,E6,E7,out) \
+#define SAND128128OutputData256A(E0,E1,E2,E3,E4,E5,E6,E7,out) \
 bitsliceAVX2(&E0,&E1,&E2,&E3,&E4,&E5,&E6,&E7);\
 _mm256_storeu_si256((__m256i*)(out  ), E0);\
 _mm256_storeu_si256((__m256i*)(out+32*1), E1);\
@@ -42,7 +42,7 @@ _mm256_storeu_si256((__m256i*)(out+32*6), E6);\
 _mm256_storeu_si256((__m256i*)(out+32*7), E7); 
 
 
-#define BATBsRK_128BSAVX2A(rk,m,x0)\
+#define SANDBsRK_128BSAVX2A(rk,m,x0)\
 	A= _mm256_set1_epi64x(x0);\
 	*(rk+m) = _mm256_cmpeq_epi8( _mm256_and_si256(MSK0, A) , MSK0); \
 	*(rk+m+1) = _mm256_cmpeq_epi8( _mm256_and_si256(MSK1, A) , MSK1); \
@@ -54,7 +54,7 @@ _mm256_storeu_si256((__m256i*)(out+32*7), E7);
 	*(rk+m+7) = _mm256_cmpeq_epi8( _mm256_and_si256(MSK7, A) , MSK7); 
 
 
-void BATGenRK_128_128BSAVX2_32Way(__m256i* rk, const unsigned char *MK)
+void SANDGenRK_128_128BSAVX2_32Way(__m256i* rk, const unsigned char *MK)
 {
 	u64i x0;
 	u64i x1;
@@ -73,17 +73,17 @@ void BATGenRK_128_128BSAVX2_32Way(__m256i* rk, const unsigned char *MK)
 
 	x1 = (*((u64i*)(MK + 8)));
 	x0 = (*((u64i*)(MK)));
-	for (i = 0; i < RoundBAT128128 - 2; i += 2)
+	for (i = 0; i < RoundSAND128128 - 2; i += 2)
 	{
-		BATBsRK_128BSAVX2A(rk, i * 8, (x0));	 x0 ^= (i + 1);
-		BATFunA_128B(x1, k, m);		x0 ^= k;
-		BATBsRK_128BSAVX2A(rk, i * 8 + 8, (x1)); x1 ^= (i + 2);
-		BATFunA_128B(x0, k, m);		x1 ^= k;
+		SANDBsRK_128BSAVX2A(rk, i * 8, (x0));	 x0 ^= (i + 1);
+		SANDFunA_128B(x1, k, m);		x0 ^= k;
+		SANDBsRK_128BSAVX2A(rk, i * 8 + 8, (x1)); x1 ^= (i + 2);
+		SANDFunA_128B(x0, k, m);		x1 ^= k;
 
 	}
-	BATBsRK_128BSAVX2A(rk, i * 8, (x0));
+	SANDBsRK_128BSAVX2A(rk, i * 8, (x0));
 	i++;
-	BATBsRK_128BSAVX2A(rk, i * 8, (x1));
+	SANDBsRK_128BSAVX2A(rk, i * 8, (x1));
 }
 
 #define FunG0(a03,a00,a2,a3,a0, a1 )\
@@ -100,7 +100,7 @@ a11=  _mm256_and_si256(a12,a0);\
 a11= _mm256_xor_si256(a11,a1);
 
 
-#define 	BATGfun32WC(a0,a1,a2,a3,a4,a5,a6,a7,        a8,a9,a10,a11,a12,a13,a14,a15,p )\
+#define 	SANDGfun32WC(a0,a1,a2,a3,a4,a5,a6,a7,        a8,a9,a10,a11,a12,a13,a14,a15,p )\
 a8= _mm256_xor_si256(a8,*(p));\
 a9= _mm256_xor_si256(a9,*(p+1));\
 a10= _mm256_xor_si256(a10,*(p+2));\
@@ -143,20 +143,20 @@ FunG1(D5,D6,a5,a7,a6,a4);\
 	a11=  _mm256_xor_si256(a11,D3);	
 
 
-#define TwoRoundsBAT128128_64Way(E0,E1,E2,E3,E4,E5,E6,E7, E8,E9,E10,E11,E12,E13,E14,E15)\
-	BATGfun32WC(E0,E1,E2,E3,E4,E5,E6,E7,        E8,E9,E10,E11,E12,E13,E14,E15,p );  \
-	BATGfun32WC(E8,E9,E10,E11,E12,E13,E14,E15,  E0,E1,E2,E3,E4,E5,E6,E7      , p+8 );
+#define TwoRoundsSAND128128_64Way(E0,E1,E2,E3,E4,E5,E6,E7, E8,E9,E10,E11,E12,E13,E14,E15)\
+	SANDGfun32WC(E0,E1,E2,E3,E4,E5,E6,E7,        E8,E9,E10,E11,E12,E13,E14,E15,p );  \
+	SANDGfun32WC(E8,E9,E10,E11,E12,E13,E14,E15,  E0,E1,E2,E3,E4,E5,E6,E7      , p+8 );
 
-void BATEnc_128_128BSAVX2_32Way(u8i *out, u8i *pt, __m256i * rk)
+void SANDEnc_128_128BSAVX2_32Way(u8i *out, u8i *pt, __m256i * rk)
 {
 	__m256i *p = (__m256i *)rk;
-	__m256i *rkend = p + RoundBAT128128 * 8;
+	__m256i *rkend = p + RoundSAND128128 * 8;
 	const __m256i MSKA = _mm256_load_si256((__m256i*) Lbswap_maskA);
 	const __m256i MSKB = _mm256_load_si256((__m256i*) Lbswap_maskB);
 	__m256i D0, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D13, D14, D15;
 	__m256i E0, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E14, E15;
-	BAT128128InputData256A(D0, D1, D2, D3, D4, D5, D6, D7, pt); //bit slicing
-	BAT128128InputData256A(D8, D9, D10, D11, D12, D13, D14, D15, pt + 256); //bit slicing  
+	SAND128128InputData256A(D0, D1, D2, D3, D4, D5, D6, D7, pt); //bit slicing
+	SAND128128InputData256A(D8, D9, D10, D11, D12, D13, D14, D15, pt + 256); //bit slicing  
 	E0 = _mm256_unpacklo_epi64(D0, D8);	    E8 = _mm256_unpackhi_epi64(D0, D8);
 	E1 = _mm256_unpacklo_epi64(D1, D9);	    E9 = _mm256_unpackhi_epi64(D1, D9);
 	E2 = _mm256_unpacklo_epi64(D2, D10);	E10 = _mm256_unpackhi_epi64(D2, D10);
@@ -168,7 +168,7 @@ void BATEnc_128_128BSAVX2_32Way(u8i *out, u8i *pt, __m256i * rk)
 
 	while (p < rkend)
 	{
-		TwoRoundsBAT128128_64Way(E0, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E14, E15);
+		TwoRoundsSAND128128_64Way(E0, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E14, E15);
 		p += 16;
 	}
 
@@ -180,26 +180,26 @@ void BATEnc_128_128BSAVX2_32Way(u8i *out, u8i *pt, __m256i * rk)
 	D5 = _mm256_unpacklo_epi64(E5, E13);	D13 = _mm256_unpackhi_epi64(E5, E13);
 	D6 = _mm256_unpacklo_epi64(E6, E14);	D14 = _mm256_unpackhi_epi64(E6, E14);
 	D7 = _mm256_unpacklo_epi64(E7, E15);	D15 = _mm256_unpackhi_epi64(E7, E15);
-	BAT128128OutputData256A(D0, D1, D2, D3, D4, D5, D6, D7, out);
-	BAT128128OutputData256A(D8, D9, D10, D11, D12, D13, D14, D15, out + 256);
+	SAND128128OutputData256A(D0, D1, D2, D3, D4, D5, D6, D7, out);
+	SAND128128OutputData256A(D8, D9, D10, D11, D12, D13, D14, D15, out + 256);
 
 }
 
-int crypto_stream_BAT128128ecb_avx2_32Way(
+int crypto_stream_SAND128128ecb_avx2_32Way(
 	unsigned char *out,
 	unsigned char *in,
 	unsigned long long inlen,
 	const unsigned char *k
 )
 {
-	__m256i rk[RoundBAT128128 * 8];
+	__m256i rk[RoundSAND128128 * 8];
 
 	if (!inlen) return 0;
 
-	BATGenRK_128_128BSAVX2_32Way(rk, k);
+	SANDGenRK_128_128BSAVX2_32Way(rk, k);
 
 	while (inlen >= 512) {
-		BATEnc_128_128BSAVX2_32Way(out, in, rk);
+		SANDEnc_128_128BSAVX2_32Way(out, in, rk);
 		inlen -= 512;
 		in += 512;
 		out += 512;
@@ -208,7 +208,7 @@ int crypto_stream_BAT128128ecb_avx2_32Way(
 	return 0;
 }
 
-void TestBAT128128BSAVX2_32Way()
+void TestSAND128128BSAVX2_32Way()
 {
 	int i, j;
 	unsigned char MK[16] = { 0 };
@@ -236,7 +236,7 @@ void TestBAT128128BSAVX2_32Way()
 	}
 	printf("----------------------------------------\n");
 
-	crypto_stream_BAT128128ecb_avx2_32Way(out, pt, 512, MK);
+	crypto_stream_SAND128128ecb_avx2_32Way(out, pt, 512, MK);
 	for (i = 0; i < 512; i++)
 	{
 		printf("%02x", out[i]);
@@ -253,14 +253,14 @@ void TestBAT128128BSAVX2_32Way()
 		for (j = 0; j < inlen; j++)
 			pt[j] = rand() % 256;
 		grdtscl(&cyclea);
-		crypto_stream_BAT128128ecb_avx2_32Way(out, pt, inlen, MK);
+		crypto_stream_SAND128128ecb_avx2_32Way(out, pt, inlen, MK);
 		grdtscl(&cycleb);
 		cp += (cycleb - cyclea);
 	}
 	cp = cp / inlen;
 	cpb = cp / (cloop);
 	cpc = (cp - cpb * cloop) * 100 / cloop;
-	printf("BAT 128-128 32-way Enc cpb: %ld.%02ld\n", cpb, cpc);
+	printf("SAND 128-128 32-way Enc cpb: %ld.%02ld\n", cpb, cpc);
 	_mm_free(pt);
 	_mm_free(out);
 }

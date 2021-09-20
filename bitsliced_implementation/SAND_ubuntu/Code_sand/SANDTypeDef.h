@@ -12,12 +12,12 @@
 #define t0_64 3
 #define t1_64 1
 
-#define BLOCKSIZEBAT64128 8 
-#define BLOCKSIZEBAT128128 16 
+#define BLOCKSIZESAND64128 8 
+#define BLOCKSIZESAND128128 16 
 
 
-#define  RoundBAT64128  48 
-#define  RoundBAT128128  54 
+#define  RoundSAND64128  48 
+#define  RoundSAND128128  54 
  
 #define TOTALLEN  (512*4000) 
 #define ENCLOOPS  2000 
@@ -96,7 +96,7 @@
   
  
   
-#define BATFunA_64B(M,T,m)\
+#define SANDFunA_64B(M,T,m)\
 	m=  ROTL32(M,20);\
 	T= (  (M<<3)&0x80000000)^m;\
 	t0=(  (m<<5)&0xEEE00000)^(  (m<<1)&0x11100000);\
@@ -110,7 +110,7 @@
  	T^=t0;\
  	T^=t2;
 	
-#define BATFunA_128B(M,k,m)\
+#define SANDFunA_128B(M,k,m)\
 	  m=ROTL64(M,52);\
 	  k=((M<<3 )&0x8000000000000000)^m;\
 	  t0=( (m<<5)&0xEEE0000000000000)^( (m<<1)&0x1110000000000000);\
@@ -129,11 +129,11 @@
  	  
 void grdtscl(u64i * ll);
 void bitsliceAVX2(__m256i * x0, __m256i * x1, __m256i * x2, __m256i * x3,__m256i *  x4,__m256i *  x5, __m256i * x6, __m256i * x7 );
-void TestBAT64128();
-void TestBAT128128();
-void TestBAT64128BSAVX2_32Way();
-void TestBAT64128BSAVX2_64Way();
-void TestBAT128128BSAVX2_16Way();
-void TestBAT128128BSAVX2_32Way();
+void TestSAND64128();
+void TestSAND128128();
+void TestSAND64128BSAVX2_32Way();
+void TestSAND64128BSAVX2_64Way();
+void TestSAND128128BSAVX2_16Way();
+void TestSAND128128BSAVX2_32Way();
 
 #endif
